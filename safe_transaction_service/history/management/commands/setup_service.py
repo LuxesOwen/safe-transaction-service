@@ -11,6 +11,19 @@ from gnosis.eth.ethereum_client import EthereumNetwork
 
 from ...models import ProxyFactory, SafeMasterCopy
 
+from enum import Enum, unique
+
+
+@unique
+class ETMPNetwork(Enum):
+    UNKNOWN = -1
+    ETMP_MAINNET = 36
+    ETMP_TESTNET = 37
+
+    @classmethod
+    def _missing_(cls, value):
+        return cls.UNKNOWN
+
 
 @dataclass
 class CeleryTaskConfiguration:
@@ -135,16 +148,16 @@ MASTER_COPIES: Dict[EthereumNetwork, List[Tuple[str, int, str]]] = {
     ],
 }
 
-MASTER_ID_COPIES: Dict[int, List[Tuple[str, int, str]]] = {
-    37: [
+MASTER_ID_COPIES: Dict[ETMPNetwork, List[Tuple[str, int, str]]] = {
+    ETMPNetwork.ETMP_TESTNET: [
         ("0xE51abdf814f8854941b9Fe8e3A4F65CAB4e7A4a8", 0, "1.3.0+L2"),
         ("0xb4A7C7da1631CF60A2Cf23ABc86986f99a1A7f70", 0, "1.3.0")
     ]
 
 }
 
-PROXY_ID_FACTORIES: Dict[int, List[Tuple[str, int]]] = {
-    37: [
+PROXY_ID_FACTORIES: Dict[ETMPNetwork, List[Tuple[str, int]]] = {
+    ETMPNetwork.ETMP_TESTNET: [
         ("0xb4A7C7da1631CF60A2Cf23ABc86986f99a1A7f70", 0),
     ]
 }
@@ -187,25 +200,23 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Setting up Safe Contract Addresses"))
         ethereum_client = EthereumClientProvider()
         # change network to specific network id
-        ethereum_network_id = ethereum_client.w3.net.version
+        ethereum_network_id = ethereum_client.w3.net.version   # decimal not hex?
         # ethereum_network = ethereum_client.get_network()
-        if ethereum_network_id in MASTER_ID_COPIES:
-            ethereum_network_name = ["ETMP_MAINNET" if ethereum_network_id == 36 else "ETMP_TESTNET"]
+        if ETMPNetwork(ethereum_network_id) in MASTER_ID_COPIES:
             self.stdout.write(
-                self.style.SUCCESS(f"Setting up {ethereum_network_name} safe addresses")
+                self.style.SUCCESS(f"Setting up {ETMPNetwork(ethereum_network_id).name} safe addresses")
             )
-            self._setup_safe_master_copies(MASTER_ID_COPIES[ethereum_network_id])
-        if ethereum_network_id in PROXY_ID_FACTORIES:
-            ethereum_network_name = ["ETMP_MAINNET" if ethereum_network_id == 36 else "ETMP_TESTNET"]
+            self._setup_safe_master_copies(MASTER_ID_COPIES[ETMPNetwork(ethereum_network_id)])
+        if ETMPNetwork(ethereum_network_id) in PROXY_ID_FACTORIES:
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Setting up {ethereum_network_name} proxy factory addresses"
+                    f"Setting up {ETMPNetwork(ethereum_network_id).name} proxy factory addresses"
                 )
             )
-            self._setup_safe_proxy_factories(PROXY_ID_FACTORIES[ethereum_network_id])
+            self._setup_safe_proxy_factories(PROXY_ID_FACTORIES[ETMPNetwork(ethereum_network_id)])
 
         if not (
-            ethereum_network_id in MASTER_ID_COPIES and ethereum_network_id in PROXY_ID_FACTORIES
+            ETMPNetwork(ethereum_network_id) in MASTER_ID_COPIES and ETMPNetwork(ethereum_network_id) in PROXY_ID_FACTORIES
         ):
             self.stdout.write(
                 self.style.WARNING("Cannot detect a valid ethereum-network")

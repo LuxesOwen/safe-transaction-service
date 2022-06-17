@@ -19,6 +19,7 @@ class ETMPNetwork(Enum):
     UNKNOWN = -1
     ETMP_MAINNET = 36
     ETMP_TESTNET = 37
+    RINKEBY = 4
 
     @classmethod
     def _missing_(cls, value):
@@ -294,16 +295,30 @@ MASTER_COPIES: Dict[EthereumNetwork, List[Tuple[str, int, str]]] = {
 }
 
 MASTER_ID_COPIES: Dict[ETMPNetwork, List[Tuple[str, int, str]]] = {
+    ETMPNetwork.ETMP_MAINNET: [
+        ("0xa9a6ba4114EA7ED8A21B77C1516efC202535ac29", 0, "1.3.0+L2"),
+        ("0x410C681887D7F0c4719F91a68eF95d375ba02eb4", 0, "1.3.0"),
+    ],
     ETMPNetwork.ETMP_TESTNET: [
-        ("0xE51abdf814f8854941b9Fe8e3A4F65CAB4e7A4a8", 0, "1.3.0+L2"),
-        ("0xb4A7C7da1631CF60A2Cf23ABc86986f99a1A7f70", 0, "1.3.0")
+        ("0xa9a6ba4114EA7ED8A21B77C1516efC202535ac29", 0, "1.3.0+L2"),
+        ("0x410C681887D7F0c4719F91a68eF95d375ba02eb4", 0, "1.3.0"),
+    ],
+    ETMPNetwork.RINKEBY: [
+        ("0x3f6a6b4aF51aEb720126900C567d6e9201509a6d", 0, "1.3.0+L2"),
+        ("0x4677228C172d14BBC6867C715cDe1a4C16704a01", 0, "1.3.0"),
     ]
 
 }
 
 PROXY_ID_FACTORIES: Dict[ETMPNetwork, List[Tuple[str, int]]] = {
+    ETMPNetwork.ETMP_MAINNET: [
+        ("0x9A1a8daA908Eaf6c7BcA965cd6ae3A3518Bce1b6", 0),
+    ],
     ETMPNetwork.ETMP_TESTNET: [
-        ("0xb4A7C7da1631CF60A2Cf23ABc86986f99a1A7f70", 0),
+        ("0x9A1a8daA908Eaf6c7BcA965cd6ae3A3518Bce1b6", 0),
+    ],
+    ETMPNetwork.RINKEBY: [
+        ("0x067917676c445279FfA8dB48A6CEC6cd14B76Cf1", 10854819),
     ]
 }
 
